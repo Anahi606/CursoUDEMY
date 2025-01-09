@@ -8,6 +8,9 @@ public class BossOneAbility : MonoBehaviour
     [SerializeField] private Vector2 dimensionesCaja;
     [SerializeField] private Transform posicionCaja;
     [SerializeField] private float tiempoDeVida;
+    private AudioSource _AudioSource;
+    [SerializeField] private AudioClip abilitySound;
+
 
     private void Start()
     {
@@ -16,6 +19,7 @@ public class BossOneAbility : MonoBehaviour
 
     public void Golpe()
     {
+
         Collider2D[] objetos = Physics2D.OverlapBoxAll(posicionCaja.position, dimensionesCaja, 0f);
         foreach (Collider2D colisiones in objetos)
         {

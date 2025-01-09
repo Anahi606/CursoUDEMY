@@ -10,6 +10,7 @@ public class BossOne : MonoBehaviour, IDamagable
     private bool mirandoDerecha = true;
     private EnemyShoot enemyShoot;
     private SpriteRenderer sp;
+    private AudioSource _AudioSource;
 
     [Header("Vida")]
     [SerializeField] private float health;
@@ -25,6 +26,12 @@ public class BossOne : MonoBehaviour, IDamagable
     [SerializeField] private float tiempoCercaParaDash = 3f;
     private float tiempoCercaJugador = 0f;
 
+    [Header("Audio Clips")]
+    [SerializeField] private AudioClip hurtSound;
+    [SerializeField] private AudioClip deathSound;
+    [SerializeField] private AudioClip attackSound;
+    [SerializeField] private AudioClip dashSound;
+
     private void Start()
     {
         animator = GetComponent<Animator>();
@@ -32,6 +39,7 @@ public class BossOne : MonoBehaviour, IDamagable
         jugador = GameObject.FindGameObjectWithTag("Player").GetComponent<Transform>();
         enemyShoot = GetComponent<EnemyShoot>();
         sp = GetComponent<SpriteRenderer>();
+        _AudioSource = GetComponent<AudioSource>();
     }
 
     private void Update()
@@ -45,6 +53,7 @@ public class BossOne : MonoBehaviour, IDamagable
 
             if (tiempoCercaJugador >= tiempoCercaParaDash)
             {
+                _AudioSource.PlayOneShot(dashSound);
                 animator.SetTrigger("Dash");
                 tiempoCercaJugador = 0f;
             }
@@ -60,6 +69,8 @@ public class BossOne : MonoBehaviour, IDamagable
         if (isDead) return;
 
         health -= daño;
+        _AudioSource.PlayOneShot(hurtSound);
+
         StartCoroutine(FlashWhite());
         if (health <= 0)
         {
@@ -79,6 +90,7 @@ public class BossOne : MonoBehaviour, IDamagable
     }
     private void Muerte()
     {
+        _AudioSource.PlayOneShot(deathSound);
         Destroy(gameObject);
     }
 
@@ -97,6 +109,7 @@ public class BossOne : MonoBehaviour, IDamagable
 
         //Activa el metodo shoot
         enemyShoot?.Shoot();
+        _AudioSource.PlayOneShot(attackSound);
 
         Collider2D[] objetos = Physics2D.OverlapCircleAll(AttackController.position, radioAtaque);
 
