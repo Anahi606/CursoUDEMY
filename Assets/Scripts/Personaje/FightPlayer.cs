@@ -1,8 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using System.Collections;
 using UnityEngine.SceneManagement;
-using UnityEngine.Video;
 
 public class FightPlayer : MonoBehaviour, IDamagable
 {
@@ -14,10 +12,13 @@ public class FightPlayer : MonoBehaviour, IDamagable
     [SerializeField] float hitflashSpeed;
     [SerializeField] private HealthBar healthBar;
     private bool isInvincible = false;
-    bool restoreTime;
-    float restoreTimeSpeed;
+    private bool restoreTime;
+    private float restoreTimeSpeed;
     private SpriteRenderer sr;
     private bool isDead = false;
+    [SerializeField] private float enemyDamage = 10f;
+    [SerializeField] private string sceneToLoad = "Boss 1";
+
     private void Awake()
     {
         if (Instance == null)
@@ -32,7 +33,6 @@ public class FightPlayer : MonoBehaviour, IDamagable
 
     private void Update()
     {
-        //Detener el Update si el jugador esta tieso
         if (isDead) return;
         RestoreTimeScale();
         FlashWhileInvincible();
@@ -60,6 +60,14 @@ public class FightPlayer : MonoBehaviour, IDamagable
         }
     }
 
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Enemigo"))
+        {
+            TomarDaño(enemyDamage);
+        }
+    }
+
     private IEnumerator StopTakingDamage()
     {
         isInvincible = true;
@@ -72,6 +80,7 @@ public class FightPlayer : MonoBehaviour, IDamagable
 
         isInvincible = false;
     }
+
     void FlashWhileInvincible()
     {
         sr.material.color = isInvincible ? Color.Lerp(Color.white, Color.black, Mathf.PingPong(Time.time * hitflashSpeed, 1.0f)) : Color.white;
@@ -124,11 +133,18 @@ public class FightPlayer : MonoBehaviour, IDamagable
         {
             movimiento.enabled = false;
         }
+
+        if (SceneManager.GetActiveScene().name == "02 - Level1")
+        {
+            PlayerPrefs.DeleteKey("DoubleJumpUnlocked");
+        }
+
         StartCoroutine(RestartFight());
     }
+
     private IEnumerator RestartFight()
     {
         yield return new WaitForSeconds(2f);
-        SceneManager.LoadScene("Boss 1");
+        SceneManager.LoadScene(sceneToLoad);
     }
 }

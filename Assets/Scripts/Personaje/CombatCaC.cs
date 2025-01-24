@@ -36,7 +36,11 @@ public class CombatCaC : MonoBehaviour
         {
             if (colisionador.CompareTag("Enemigo"))
             {
-                colisionador.transform.GetComponent<BossOne>().TomarDaño(dañoGolpe);
+                IDamagable enemigo = colisionador.GetComponent<IDamagable>();
+                if (enemigo != null)
+                {
+                    enemigo.TomarDaño(dañoGolpe);
+                }
             }
         }
     }
